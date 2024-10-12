@@ -8,13 +8,9 @@ $ciudades=array(
     'LA' => 'Los Ángeles',
     'CHI' =>'Chicago'
   );
-
   print_r($ciudades);
   echo "<br>";
-
-  for ($i=0; $i<count($ciudades); $i++) {
-    echo "La ciudad con el índice $i tiene el nombre de $ciudades[$i]<br>";
+  foreach ($ciudades as $clave => $valor) {
+    echo "El índice del array que contiene como valor $valor es $clave<br>";
   }
-
-
 ?>
