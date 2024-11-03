@@ -38,33 +38,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mes = intval($_POST["mes"]);
     $anio = intval($_POST["anio"]);
 
-    // Validar mes y año
     if ($mes >= 1 && $mes <= 12 && $anio >= 1900 && $anio <= 2100) {
-        // Obtener el primer día del mes y el número de días del mes
         $primerDiaMes = mktime(0, 0, 0, $mes, 1, $anio);
         $diasEnMes = date("t", $primerDiaMes);
         $diaInicioSemana = date("N", $primerDiaMes); // 1 (lunes) a 7 (domingo)
 
-        // Crear la tabla del calendario
         echo "<h3>Calendario de " . date("F Y", $primerDiaMes) . "</h3>";
         echo "<table>";
         echo "<tr><th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th></tr><tr>";
 
-        // Rellenar los días vacíos antes del primer día del mes
         for ($i = 1; $i < $diaInicioSemana; $i++) {
             echo "<td class='empty'></td>";
         }
 
-        // Rellenar los días del mes
         for ($dia = 1; $dia <= $diasEnMes; $dia++) {
             echo "<td>$dia</td>";
-            // Si es domingo, terminar la fila y comenzar una nueva
             if (($dia + $diaInicioSemana - 1) % 7 == 0) {
                 echo "</tr><tr>";
             }
         }
 
-        // Rellenar los días vacíos al final del último día del mes
         while (($dia + $diaInicioSemana - 1) % 7 != 0) {
             echo "<td class='empty'></td>";
             $dia++;
