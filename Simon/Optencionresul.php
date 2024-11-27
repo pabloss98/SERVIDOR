@@ -3,6 +3,8 @@
     $connection = new mysqli($hn, $un, $pw, $db);
         if ($connection->connect_error) die("Fatal Error");
             $query = "SELECT usu, contraseña FROM usuarios";
+            $insertar="INSERT INTO usuarios(usu, contraseña, rol) VALUES ('yolanda', 'yolanda', 'Jugador')";
+            $connection->query($insertar);
             $result = $connection->query($query);
         if (!$result) die("Fatal Error");
             $rows = $result->num_rows;
@@ -14,6 +16,7 @@
             echo 'Usuario: ' .htmlspecialchars($result->fetch_assoc()['usu']) .'<br>';
 
         }
+
  $result->close();
  $connection->close();
 ?> 
