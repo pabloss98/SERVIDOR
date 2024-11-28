@@ -8,6 +8,7 @@
             $eliminar= ("DELETE FROM usuarios WHERE usu = 'yolanda'");
             $result = $connection->query($eliminar);
             $result = $connection->query($query);
+            
         if (!$result) die("Fatal Error");
             $rows = $result->num_rows;
 
