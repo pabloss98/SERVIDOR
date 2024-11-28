@@ -5,6 +5,8 @@
             $query = "SELECT usu, contraseña FROM usuarios";
             $insertar="INSERT INTO usuarios(usu, contraseña, rol) VALUES ('yolanda', 'yolanda', 'Jugador')";
             $connection->query($insertar);
+            $eliminar= ("DELETE FROM usuarios WHERE usu = 'yolanda'");
+            $result = $connection->query($eliminar);
             $result = $connection->query($query);
         if (!$result) die("Fatal Error");
             $rows = $result->num_rows;
