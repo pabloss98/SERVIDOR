@@ -1,5 +1,6 @@
 <?php
     session_start();
+    $usuario = $_SESSION['usuario'];
     include "pintar-circulos.php";
     function actionForm(){
         if($_SESSION['contador']==4){
@@ -26,7 +27,8 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <h1>Adivina</h1>
+        <h1>Simón</h1>
+        <h2><?= htmlspecialchars($usuario) ?> pulsa los botones en el orden correspondiente</h2>
         <?php
         if (isset($_POST['jugar'])){
             $_SESSION['contador']=0;

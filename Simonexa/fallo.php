@@ -1,4 +1,5 @@
-<?php session_start()?>
+<?php session_start();
+$usuario = $_SESSION['usuario'];?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,11 +11,10 @@
 <body>
     <!-- Mirar en casa-->
     <h1>Simon</h1>
-    <h2>Has fallado <?php $usuario;></h2>
+    <h2>Has fallado <?= htmlspecialchars($usuario) ?></h2>
     <p>La combinacion era: </p>
     <?php
-        $usuario = $_SESSION['usuario'];
-        echo $usuario;
+        
         echo "<br>";
         echo "<br>";
         include "pintar-circulos.php";
