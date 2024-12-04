@@ -16,5 +16,7 @@ $usuario = $_SESSION['usuario'];?>
         pintar_circulos($_SESSION['resp1'],$_SESSION['resp2'],$_SESSION['resp3'],$_SESSION['resp4']);
     ?>
     <a href="inicio.php">Volver a jugar</a>
+    <br>
+    <a href="estadistica.php">Estadisticas</a>
 </body>
 </html>
