@@ -1,3 +1,5 @@
+<?php session_start();
+$usuario = $_SESSION['usuario'];?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +9,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Hola</h1>
+    <h1>Simon</h1>
     <h2><?= htmlspecialchars($usuario) ?> los resultados son: </h2>
+
+    
 
     <a href="inicio.php">Volver a jugar</a>
 </body>
