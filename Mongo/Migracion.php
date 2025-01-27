@@ -1,4 +1,5 @@
 <?php
+//migracion de mysql a mongodb
 require 'C:/xampp/htdocs/vendor/autoload.php'; // Asegúrate de tener el autoload de Composer
 
 // Conectar a MySQL
