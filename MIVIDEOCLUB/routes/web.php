@@ -3,8 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-   // return view('welcome');
-   echo "Hola mundo";
+    return view('home', array('nombre' => 'Pedro'));
 });
 
 Route::get('pagina1', function () {
