@@ -3,29 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <form action="Autenticacion.php" method="POST">
-
-    <label for="usuario">Usuario:</label>
-    <input type="text" id="usuario" name="usuario" required>
-    <br><br>
-    <label for="contraseña">Contraseña:</label>
-    <input type="password" id="password" name="password"  required>
-    <br><br>
-    <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" name="nombre"  required>
-    <br><br>
-    <label for="apellidos">Apellidos:</label>
-    <input type="text" id="apellidos" name="apellidos"  required>
-    <br><br>
-    <label for="nombre">Fecha de nacimiento :</label>
-    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento"  required>
-    <br><br>
-    <button type="submit" >Enviar</button>
-
-    </form>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title><?php echo $titulo; ?></title>
+    <style>
+        .form-container {
+            width: 50%;
+            margin: auto;
+            margin-top: 10%;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="form-container">
+        <form>
+            <div class="form-group row">
+                <label for="inputUsuario" class="col-sm-2 col-form-label">Usuario</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputUsuario" placeholder="Usuario">
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <label for="inputContraseña" class="col-sm-2 col-form-label">Contraseña</label>
+                <div class="col-sm-10">
+                <input type="password" class="form-control" id="inputContraseña" placeholder="Contraseña">
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <label for="inputNombre" class="col-sm-2 col-form-label">Nombre</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputNombre" placeholder="Nombre">
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <label for="inputApellidos" class="col-sm-2 col-form-label">Apellidos</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputApellidos" placeholder="Apellidos">
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <label for="inputFecha_nacimiento" class="col-sm-2 col-form-label">Fecha de nacimiento</label>
+                <div class="col-sm-10">
+                <input type="date" class="form-control" id="inputFecha_nacimiento" placeholder="">
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <div class="col-sm-10">
+                <button type="submit" class="btn btn-primary">Registrarse</button>
+                </div>
+            </div>
+            </form>
+            </div>
+    </body>
+    </html>
 
 
     <?php
