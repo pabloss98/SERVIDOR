@@ -71,7 +71,7 @@
     $hn = "localhost"; 
     $un = "root";      
     $pw = "";          
-    $db = "bede_simon"; 
+    $db = "diabetesdb"; 
 
     $connection = new mysqli($hn, $un, $pw, $db);
 
