@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     var_dump($_POST); // Verifica si los datos llegan bien
 
     // Preparar la consulta para evitar inyección SQL
-    $stmt = $connection->prepare("SELECT nombre, contra FROM usuario WHERE nombre = ?");
+    $stmt = $connection->prepare("SELECT usuario, contra FROM usuario WHERE usuario = ?");
     if (!$stmt) {
         die("❌ Error en la preparación de la consulta: " . $connection->error);
     }
@@ -34,9 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         
         var_dump($row); // Verifica si la consulta obtiene datos
+        var_dump($password, $row['contra']); // Para ver ambas contraseñas
 
-        // Si las contraseñas NO están hasheadas, usa comparación simple
-        if ($password === $row['contra']) {
+        // Usar password_verify para comparar la contraseña ingresada con la hasheada
+        if (password_verify($password, $row['contra'])) {
             $_SESSION["login"] = $login;
             header("Location: Insercion.php");
             exit();
@@ -78,14 +79,14 @@ $connection->close();
             <div class="form-group row">
                 <label for="inputUsuario" class="col-sm-2 col-form-label">Usuario</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="inputUsuario" name="login" placeholder="Usuario" required>
+                    <input type="text" class="form-control" id="login" name="login" placeholder="Usuario" required>
                 </div>
             </div>
             <br>
             <div class="form-group row">
                 <label for="inputContraseña" class="col-sm-2 col-form-label">Contraseña</label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" id="inputContraseña" name="password" placeholder="Contraseña" required>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
                 </div>
             </div>
             <br>
