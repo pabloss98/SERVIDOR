@@ -17,12 +17,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $apellidos = $_POST['apellidos'];
     $fecha = $_POST['fecha_nacimiento'];
 
+    // Verificar si el usuario ya existe
+    $stmt = $connection->prepare("SELECT COUNT(*) FROM usuario WHERE usuario = ?");
+    $stmt->bind_param("s", $usuario);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($count > 0) {
+        echo "<h1>El usuario ya existe. Por favor elige otro.</h1>";
+    } else {
+        //Si el usuario no existe procede a insertar el nuevo usuario
     $stmt = $connection->prepare("INSERT INTO usuario (usuario, contra, nombre, apellidos, fecha_nacimiento) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssss", $usuario, $password, $nombre, $apellidos, $fecha);
 
     if($stmt->execute()){
         echo "<h1>¡$usuario, se ha registrado con éxito!</h1>";
-        header("Location: Insercion.php");
+        header("Location: Inicio.php");
         exit();
     } else {
         echo "<h1>Error al registrar usuario</h1>";
@@ -30,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt->close();
 }
-
+}
 $connection->close();
 ?>
 

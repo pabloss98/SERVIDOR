@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Usar password_verify para comparar la contraseña ingresada con la hasheada
         if (password_verify($password, $row['contra'])) {
             $_SESSION["login"] = $login;
-            header("Location: Insercion.php");
+            header("Location: Formulario.html");
             exit();
         } else {
             $error = "Credenciales incorrectas. Inténtalo de nuevo.";
