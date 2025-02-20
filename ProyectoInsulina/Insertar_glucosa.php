@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $deporte = $_POST['deporte'];
         $lenta = $_POST['lenta'];
 
-        $stmt = $connection->prepare("INSERT INTO glucosa (fecha, deporte, insulina_lenta) VALUES (?, ?, ?)");
+        $stmt = $connection->prepare("INSERT INTO control_glucosa (fecha, deporte, lenta) VALUES (?, ?, ?)");
         $stmt->bind_param("sii", $fecha, $deporte, $lenta);
         $stmt->execute();
         $stmt->close();
