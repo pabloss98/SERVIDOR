@@ -19,7 +19,7 @@ function obtenerRegistros($connection, $fecha, $tipo) {
             $query = "SELECT * FROM comidas WHERE fecha = ?";
             break;
         case 'glucosa':
-            $query = "SELECT * FROM glucosa WHERE fecha = ?";
+            $query = "SELECT * FROM control_glucosa WHERE fecha = ?";
             break;
         case 'hiper':
             $query = "SELECT * FROM hiperglucemia WHERE fecha = ?";
@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
             break;
         
             case 'glucosa':
-                $query = "UPDATE glucosa SET fecha=?, deporte=?, lenta=? WHERE id=?";
+                $query = "UPDATE control_glucosa SET fecha=?, deporte=?, lenta=? WHERE id=?";
                 $stmt = $connection->prepare($query);
                 $stmt->bind_param("siii", 
                     $_POST['fecha'], 

@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $hn = "localhost"; 
 $un = "root";      
 $pw = "";          
@@ -18,11 +20,14 @@ if (isset($_POST['glucosa']) && isset($_POST['hora']) && isset($_POST['correccio
     $correccion = $_POST['correccion'];
     $tipo_comida = $_POST['tipo_comida'];
     $fecha = $_POST['fecha'];
+    $id = $_SESSION['Id'];
 
-    $stmt = $connection->prepare("INSERT INTO hiperglucemia (glucosa, hora, correccion, tipo_comida, fecha) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("issss", $glucosa, $hora, $correccion, $tipo_comida, $fecha);
+    $stmt = $connection->prepare("INSERT INTO hiperglucemia (id_usu, glucosa, hora, correccion, tipo_comida, fecha) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iissss", $id, $glucosa, $hora, $correccion, $tipo_comida, $fecha);
     $stmt->execute();
     $stmt->close();
+
+    echo("Se han insertado los datos correctamente");
     }
 }
 $connection->close();

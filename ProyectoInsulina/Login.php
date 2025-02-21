@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     var_dump($_POST); // Verifica si los datos llegan bien
 
     // Preparar la consulta para evitar inyección SQL
-    $stmt = $connection->prepare("SELECT usuario, contra FROM usuario WHERE usuario = ?");
+    $stmt = $connection->prepare("SELECT id_usu, usuario, contra FROM usuario WHERE usuario = ?");
     if (!$stmt) {
         die("❌ Error en la preparación de la consulta: " . $connection->error);
     }
@@ -39,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Usar password_verify para comparar la contraseña ingresada con la hasheada
         if (password_verify($password, $row['contra'])) {
             $_SESSION["login"] = $login;
+            $_SESSION["Id"] = $row['id_usu'];
             header("Location: Formulario.html");
             exit();
         } else {

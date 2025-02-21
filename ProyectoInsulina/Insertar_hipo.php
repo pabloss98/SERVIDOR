@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $hn = "localhost"; 
 $un = "root";      
 $pw = "";          
@@ -17,11 +19,14 @@ if (isset($_POST['glucosa']) && isset($_POST['hora'])) {
     $hora = $_POST['hora'];
     $tipo_comida = $_POST['tipo_comida'];
     $fecha = $_POST['fecha'];
+    $id = $_SESSION['Id'];
 
-    $stmt = $connection->prepare("INSERT INTO hipoglucemia (glucosa, hora, tipo_comida, fecha) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isss", $glucosa, $hora, $tipo_comida, $fecha);
+    $stmt = $connection->prepare("INSERT INTO hipoglucemia (id_usu, glucosa, hora, tipo_comida, fecha) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("iisss", $id, $glucosa, $hora, $tipo_comida, $fecha);
     $stmt->execute();
     $stmt->close();
+
+    echo("Se han insertado los datos correctamente");
     }
 }
 $connection->close();

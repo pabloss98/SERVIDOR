@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $hn = "localhost"; 
 $un = "root";      
 $pw = "";          
@@ -19,11 +21,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $raciones = $_POST['raciones'];
         $insulina = $_POST['insulina'];
         $fecha = $_POST['fecha'];
+        $id = $_SESSION['Id'];
 
-        $stmt = $connection->prepare("INSERT INTO comida (tipo_comida, gl_1h, gl_2h, raciones, insulina, fecha) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("siisss", $tipo_comida, $gl_1h, $gl_2h, $raciones, $insulina, $fecha);
+        $stmt = $connection->prepare("INSERT INTO comida (id_usu, tipo_comida, gl_1h, gl_2h, raciones, insulina, fecha) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isiisss", $id, $tipo_comida, $gl_1h, $gl_2h, $raciones, $insulina, $fecha);
         $stmt->execute();
         $stmt->close();
+
+        echo("Se han insertado los datos correctamente");
     }
 
 }
