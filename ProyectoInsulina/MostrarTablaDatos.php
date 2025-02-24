@@ -85,7 +85,7 @@ while ($row = $result->fetch_assoc()) {
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="Inicio/menuControl.php" class="btn btn-primary mt-2 w-100">Volver</a>
+        <a href="Formulario.html" class="btn btn-primary mt-2 w-100">Volver</a>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
