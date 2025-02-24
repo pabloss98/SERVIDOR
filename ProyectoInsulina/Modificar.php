@@ -16,16 +16,16 @@ function obtenerRegistros($connection, $fecha, $tipo) {
     $query = "";
     switch($tipo) {
         case 'comida':
-            $query = "SELECT * FROM comidas WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, tipo_comida, gl_1h, gl_2h, raciones, insulina FROM comida WHERE fecha = ?";
             break;
         case 'glucosa':
-            $query = "SELECT * FROM control_glucosa WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, deporte, lenta FROM control_glucosa WHERE fecha = ?";
             break;
         case 'hiper':
-            $query = "SELECT * FROM hiperglucemia WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, tipo_comida, glucosa, hora, correccion FROM hiperglucemia WHERE fecha = ?";
             break;
         case 'hipo':
-            $query = "SELECT * FROM hipoglucemia WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, tipo_comida, glucosa, hora FROM hipoglucemia WHERE fecha = ?";
             break;
     }
     
@@ -38,56 +38,98 @@ function obtenerRegistros($connection, $fecha, $tipo) {
 // Procesar la actualización si se envía el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
     $tipo = $_POST['tipo'];
-    $id = $_POST['id'];
+    $id = $_POST['id_usu'];
     
     switch($tipo) {
         case 'comida':
-            $query = "UPDATE comidas SET tipo_comida=?, gl_1h=?, gl_2h=?, raciones=?, insulina=? WHERE id=?";
+            $query = "UPDATE comida SET fecha=?, tipo_comida=?, gl_1h=?, gl_2h=?, raciones=?, insulina=? WHERE id_usu=? AND fecha=? AND tipo_comida=?";
             $stmt = $connection->prepare($query);
-            $stmt->bind_param("siiiii",
-                    $_POST['tipo_comida'],
-                    $_POST['gl_1h'], 
-                    $_POST['gl_2h'], 
-                    $_POST['raciones'], 
-                    $_POST['insulina'], 
-                    $id);
+            $stmt->bind_param("ssiiiiiss",
+                $_POST['fecha'],
+                $_POST['tipo_comida'],
+                $_POST['gl_1h'], 
+                $_POST['gl_2h'], 
+                $_POST['raciones'], 
+                $_POST['insulina'],
+                $id,
+                $_POST['fecha_original'],
+                $_POST['tipo_comida_original']
+            );
             break;
+            
         
             case 'glucosa':
-                $query = "UPDATE control_glucosa SET fecha=?, deporte=?, lenta=? WHERE id=?";
+                $query = "UPDATE control_glucosa SET fecha=?, deporte=?, lenta=? WHERE id_usu=? AND fecha=?";
                 $stmt = $connection->prepare($query);
-                $stmt->bind_param("siii", 
+                $stmt->bind_param("siiis", 
                     $_POST['fecha'], 
                     $_POST['deporte'], 
                     $_POST['lenta'],
-                    $id
+                    $id,
+                    $_POST['fecha_original']
                 );
                 break;
     
             case 'hiper':
-                $query = "UPDATE hiperglucemia SET glucosa=?, hora=?, correccion=?, tipo_comida=?, fecha=? WHERE id=?";
+                $query = "UPDATE hiperglucemia SET glucosa=?, hora=?, correccion=?, tipo_comida=?, fecha=? WHERE id_usu=? AND fecha=? AND tipo_comida=?";
                 $stmt = $connection->prepare($query);
-                $stmt->bind_param("issssi", 
+                $stmt->bind_param("issssiss", 
                     $_POST['glucosa'], 
                     $_POST['hora'], 
                     $_POST['correccion'],
                     $_POST['tipo_comida'],
                     $_POST['fecha'],
                     $id
+                    $_POST['fecha_original'],
+                    $_POST['tipo_comida_original']
                 );
                 break;
     
             case 'hipo':
-                $query = "UPDATE hipoglucemia SET glucosa=?, hora=?, tipo_comida=?, fecha=? WHERE id=?";
+                $query = "UPDATE hipoglucemia SET glucosa=?, hora=?, tipo_comida=?, fecha=? WHERE id_usu=? AND fecha=? AND tipo_comida=? ";
                 $stmt = $connection->prepare($query);
-                $stmt->bind_param("isssi", 
+                $stmt->bind_param("isssiss", 
                     $_POST['glucosa'], 
                     $_POST['hora'], 
                     $_POST['tipo_comida'],
                     $_POST['fecha'],
                     $id
+                    $_POST['fecha_original'],
+                    $_POST['tipo_comida_original']
                 );
                 break;
+
+                case 'hipo':
+    ?>
+    <div class="row">
+        <div class="col-md-2 mb-3">
+            <label class="form-label">Fecha</label>
+            <input type="date" class="form-control" name="fecha" 
+                   value="<?php echo htmlspecialchars($row['fecha']); ?>">
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Tipo de Comida</label>
+            <select class="form-select" name="tipo_comida">
+                <option value="Desayuno" <?php echo $row['tipo_comida'] == 'Desayuno' ? 'selected' : ''; ?>>Desayuno</option>
+                <option value="Comida" <?php echo $row['tipo_comida'] == 'Comida' ? 'selected' : ''; ?>>Comida</option>
+                <option value="Cena" <?php echo $row['tipo_comida'] == 'Cena' ? 'selected' : ''; ?>>Cena</option>
+                <option value="Otro" <?php echo $row['tipo_comida'] == 'Otro' ? 'selected' : ''; ?>>Otro</option>
+            </select>
+        </div>
+        <div class="col-md-2 mb-3">
+            <label class="form-label">Glucosa</label>
+            <input type="number" class="form-control" name="glucosa" 
+                   value="<?php echo htmlspecialchars($row['glucosa']); ?>">
+        </div>
+        <div class="col-md-2 mb-3">
+            <label class="form-label">Hora</label>
+            <input type="time" class="form-control" name="hora" 
+                   value="<?php echo htmlspecialchars($row['hora']); ?>">
+        </div>
+    </div>
+    <?php
+    break;
+
     }
     
     if ($stmt->execute()) {
@@ -111,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
         <h2>Modificar Registros</h2>
         
         <!-- Formulario de búsqueda -->
-        <form method="GET" class="mb-4">
+        <form method="POST" class="mb-4">
             <div class="row">
                 <div class="col-md-4">
                     <label class="form-label">Fecha</label>
@@ -134,36 +176,152 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
         </form>
 
         <?php
-        if (isset($_GET['fecha']) && isset($_GET['tipo'])) {
-            $registros = obtenerRegistros($connection, $_GET['fecha'], $_GET['tipo']);
+        if (isset($_POST['fecha']) && isset($_POST['tipo'])) {
+            $registros = obtenerRegistros($connection, $_POST['fecha'], $_POST['tipo']);
             
             if ($registros->num_rows > 0) {
                 while ($row = $registros->fetch_assoc()) {
                     echo "<div class='card mb-3'>";
                     echo "<div class='card-body'>";
                     echo "<form method='POST'>";
-                    echo "<input type='hidden' name='tipo' value='" . $_GET['tipo'] . "'>";
-                    echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
+                    echo "<input type='hidden' name='tipo' value='" . $_POST['tipo'] . "'>";
+                    echo "<input type='hidden' name='id_usu' value='" . $row['id_usu'] . "'>";
+                    echo "<input type='hidden' name='fecha_original' value='" . $row['fecha'] . "'>";
+                    echo "<input type='hidden' name='tipo_comida_original' value='" . htmlspecialchars($row['tipo_comida']) . "'>";
                     
                     // Mostrar campos según el tipo de registro
-                    switch($_GET['tipo']) {
+                    switch($_POST['tipo']) {
+                        
                         case 'comida':
                             ?>
                             <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Fecha</label>
+                                    <input type="date" class="form-control" name="fecha" 
+                                           value="<?php echo htmlspecialchars($row['fecha']); ?>">
+                                </div>
+                                <div class="col-md-3 mb-3">
                                     <label class="form-label">Tipo de Comida</label>
-                                    <input type="text" class="form-control" name="tipo_comida" 
-                                           value="<?php echo $row['tipo_comida']; ?>">
+                                    <select class="form-select" name="tipo_comida">
+                                        <option value="Desayuno" <?php echo $row['tipo_comida'] == 'Desayuno' ? 'selected' : ''; ?>>Desayuno</option>
+                                        <option value="Comida" <?php echo $row['tipo_comida'] == 'Comida' ? 'selected' : ''; ?>>Comida</option>
+                                        <option value="Cena" <?php echo $row['tipo_comida'] == 'Cena' ? 'selected' : ''; ?>>Cena</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-2 mb-3">
                                     <label class="form-label">Glucosa 1h</label>
                                     <input type="number" class="form-control" name="gl_1h" 
-                                           value="<?php echo $row['gl_1h']; ?>">
+                                           value="<?php echo htmlspecialchars($row['gl_1h']); ?>">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Glucosa 2h</label>
+                                    <input type="number" class="form-control" name="gl_2h" 
+                                           value="<?php echo htmlspecialchars($row['gl_2h']); ?>">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Raciones</label>
+                                    <input type="number" class="form-control" name="raciones" 
+                                           value="<?php echo htmlspecialchars($row['raciones']); ?>">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Insulina</label>
+                                    <input type="number" class="form-control" name="insulina" 
+                                           value="<?php echo htmlspecialchars($row['insulina']); ?>">
+                                </div>
+                            </div>
+                            <?php
+                            break;
+
+
+
+                        case 'glucosa':
+                            ?>
+                            <div class="row">
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Fecha</label>
+                                    <input type="date" class="form-control" name="fecha" 
+                                           value="<?php echo $row['fecha']; ?>">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Deporte</label>
+                                    <input type="text" class="form-control" name="deporte" 
+                                           value="<?php echo $row['deporte']; ?>">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Lenta</label>
+                                    <input type="number" class="form-control" name="lenta" 
+                                           value="<?php echo $row['lenta']; ?>">
                                 </div>
                                 <!-- Añadir más campos según necesidad -->
                             </div>
                             <?php
                             break;
+
+                            case 'hiper':
+                                ?>
+                                <div class="row">
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Fecha</label>
+                                        <input type="date" class="form-control" name="fecha" 
+                                               value="<?php echo htmlspecialchars($row['fecha']); ?>">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Tipo de Comida</label>
+                                        <select class="form-select" name="tipo_comida">
+                                            <option value="Desayuno" <?php echo $row['tipo_comida'] == 'Desayuno' ? 'selected' : ''; ?>>Desayuno</option>
+                                            <option value="Comida" <?php echo $row['tipo_comida'] == 'Comida' ? 'selected' : ''; ?>>Comida</option>
+                                            <option value="Cena" <?php echo $row['tipo_comida'] == 'Cena' ? 'selected' : ''; ?>>Cena</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Glucosa</label>
+                                        <input type="number" class="form-control" name="glucosa" 
+                                               value="<?php echo htmlspecialchars($row['glucosa']); ?>">
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Hora</label>
+                                        <input type="time" class="form-control" name="hora" 
+                                               value="<?php echo htmlspecialchars($row['hora']); ?>">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Corrección</label>
+                                        <input type="text" class="form-control" name="correccion" 
+                                               value="<?php echo htmlspecialchars($row['correccion']); ?>">
+                                    </div>
+                                </div>
+                                <?php
+                                break;
+
+                                case 'hipo':
+                                    ?>
+                                    <div class="row">
+                                        <div class="col-md-2 mb-3">
+                                            <label class="form-label">Fecha</label>
+                                            <input type="date" class="form-control" name="fecha" 
+                                                   value="<?php echo htmlspecialchars($row['fecha']); ?>">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Tipo de Comida</label>
+                                            <select class="form-select" name="tipo_comida">
+                                                <option value="Desayuno" <?php echo $row['tipo_comida'] == 'Desayuno' ? 'selected' : ''; ?>>Desayuno</option>
+                                                <option value="Comida" <?php echo $row['tipo_comida'] == 'Comida' ? 'selected' : ''; ?>>Comida</option>
+                                                <option value="Cena" <?php echo $row['tipo_comida'] == 'Cena' ? 'selected' : ''; ?>>Cena</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label class="form-label">Glucosa</label>
+                                            <input type="number" class="form-control" name="glucosa" 
+                                                   value="<?php echo htmlspecialchars($row['glucosa']); ?>">
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label class="form-label">Hora</label>
+                                            <input type="time" class="form-control" name="hora" 
+                                                   value="<?php echo htmlspecialchars($row['hora']); ?>">
+                                        </div>
+                                    </div>
+                                    <?php
+                                    break;
+                                
                         // Añadir casos para otros tipos
                     }
                     

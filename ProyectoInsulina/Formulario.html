@@ -37,7 +37,11 @@
             <form action="Insertar_comida.php" method="POST">
                 <div class="mb-3">
                     <label class="form-label">Tipo de Comida</label>
-                    <input type="text" class="form-control" name="tipo_comida" maxlength="30">
+                    <select class="form-control" name="tipo_comida">
+                        <option value="Desayuno">Desayuno</option>
+                        <option value="Comida">Comida</option>
+                        <option value="Cena">Cena</option>
+                    </select>
                 </div>
 
                 <div class="mb-3">

@@ -16,7 +16,7 @@ function obtenerRegistros($connection, $fecha, $tipo) {
     $query = "";
     switch($tipo) {
         case 'comida':
-            $query = "SELECT * FROM comidas WHERE fecha = ?";
+            $query = "SELECT * FROM comida WHERE fecha = ?";
             break;
         case 'glucosa':
             $query = "SELECT * FROM control_glucosa WHERE fecha = ?";
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar'])) {
     
     switch($tipo) {
         case 'comida':
-            $query = "DELETE FROM comidas WHERE id = ?";
+            $query = "DELETE FROM comida WHERE id = ?";
             break;
         case 'glucosa':
             $query = "DELETE FROM control_glucosa WHERE id = ?";
