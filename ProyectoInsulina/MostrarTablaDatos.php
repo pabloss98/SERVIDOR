@@ -89,6 +89,7 @@ while ($row = $result->fetch_assoc()) {
     </div>
         <a href="modificar.php" class="btn btn-warning">Modificar datos</a>
         <a href="Eliminar.php" class="btn btn-danger">Eliminar datos</a>
+        <a href="Estadisticas.php" class="btn btn-primary">Estadisticas</a>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
