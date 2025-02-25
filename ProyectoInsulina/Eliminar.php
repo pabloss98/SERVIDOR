@@ -39,20 +39,20 @@ function obtenerRegistros($connection, $fecha, $tipo) {
 // Procesar la eliminación si se envía el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar'])) {
     $tipo = $_POST['tipo'];
-    $id = $_POST['id'];
+    $id = $_POST['id_usu'];
     
     switch($tipo) {
         case 'comida':
-            $query = "DELETE FROM comida WHERE id = ?";
+            $query = "DELETE FROM comida WHERE id_usu = ?";
             break;
         case 'glucosa':
-            $query = "DELETE FROM control_glucosa WHERE id = ?";
+            $query = "DELETE FROM control_glucosa WHERE id_usu = ?";
             break;
         case 'hiper':
-            $query = "DELETE FROM hiperglucemia WHERE id = ?";
+            $query = "DELETE FROM hiperglucemia WHERE id_usu = ?";
             break;
         case 'hipo':
-            $query = "DELETE FROM hipoglucemia WHERE id = ?";
+            $query = "DELETE FROM hipoglucemia WHERE id_usu = ?";
             break;
     }
     
@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar'])) {
                     echo "<div class='card-body'>";
                     echo "<form method='POST' onsubmit='return confirm(\"¿Está seguro de que desea eliminar este registro?\")'>";
                     echo "<input type='hidden' name='tipo' value='" . $_GET['tipo'] . "'>";
-                    echo "<input type='hidden' name='id' value='" . $row['id'] . "'>";
+                    echo "<input type='hidden' name='id_usu' value='" . $row['id_usu'] . "'>";
                     
                     // Mostrar información del registro según el tipo
                     switch($_GET['tipo']) {
@@ -159,6 +159,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar'])) {
         <?php if(isset($error)): ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
+        <a href="MostrarTablaDatos.php" class="btn btn-primary">Mostrar tabla de datos</a>
+        <a href="Formulario.html" class="btn btn-primary">Volver</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

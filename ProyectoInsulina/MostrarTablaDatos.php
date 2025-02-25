@@ -24,7 +24,7 @@ $result = $conn->query($sql);
 
 // Estructurar los datos por día y tipo de comida
 $data = [];
-$tipo_comidas = ['Desayuno','Mediodia','Comida','Merienda','Cena'];
+$tipo_comidas = ['Desayuno','Comida','Cena'];
 while ($row = $result->fetch_assoc()) {
     $data[$row['fecha']][$row['tipo_comida']] = $row;
     if (!in_array($row['tipo_comida'], $tipo_comidas)) {
@@ -46,7 +46,7 @@ while ($row = $result->fetch_assoc()) {
             <thead class="table-dark">
                 <tr>
                     <th rowspan="2" class="text-center align-middle">Día</th>
-                    <th rowspan="2" class="text-center align-middle">Deporte</th>
+                    <th rowspan="2" class="text-center align-middle">Deporte (min)</th>
                     <th rowspan="2" class="text-center align-middle">Insulina Lenta</th>
                     <?php foreach ($tipo_comidas as $tipo): ?>
                         <th colspan="8" class="text-center"> <?= $tipo ?> </th>
@@ -87,7 +87,9 @@ while ($row = $result->fetch_assoc()) {
         </table>
         <a href="Formulario.html" class="btn btn-primary mt-2 w-100">Volver</a>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <a href="modificar.php" class="btn btn-warning">Modificar datos</a>
+        <a href="Eliminar.php" class="btn btn-danger">Eliminar datos</a>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 <?php $conn->close(); ?>
