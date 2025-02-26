@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Verificar si el usuario ha iniciado sesión
+if (!isset($_SESSION["Id"])) {
+    header("Location: Login.php");
+    exit();
+}
+
 $hn = "localhost";
 $un = "root";
 $pw = "";
@@ -11,27 +18,29 @@ if ($connection->connect_error) {
     die("Error de conexión: " . $connection->connect_error);
 }
 
-
 // Función para obtener registros por fecha y tipo
 function obtenerRegistros($connection, $fecha, $tipo) {
+    // Obtener el ID del usuario de la sesión
+    $id_usuario = $_SESSION["Id"];
+    
     $query = "";
     switch($tipo) {
         case 'comida':
-            $query = "SELECT * FROM comida WHERE fecha = ?";
+            $query = "SELECT * FROM comida WHERE fecha = ? AND id_usu = ?";
             break;
         case 'glucosa':
-            $query = "SELECT * FROM control_glucosa WHERE fecha = ?";
+            $query = "SELECT * FROM control_glucosa WHERE fecha = ? AND id_usu = ?";
             break;
         case 'hiper':
-            $query = "SELECT * FROM hiperglucemia WHERE fecha = ?";
+            $query = "SELECT * FROM hiperglucemia WHERE fecha = ? AND id_usu = ?";
             break;
         case 'hipo':
-            $query = "SELECT * FROM hipoglucemia WHERE fecha = ?";
+            $query = "SELECT * FROM hipoglucemia WHERE fecha = ? AND id_usu = ?";
             break;
     }
     
     $stmt = $connection->prepare($query);
-    $stmt->bind_param("s", $fecha);
+    $stmt->bind_param("si", $fecha, $id_usuario);
     $stmt->execute();
     return $stmt->get_result();
 }
@@ -39,30 +48,57 @@ function obtenerRegistros($connection, $fecha, $tipo) {
 // Procesar la eliminación si se envía el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminar'])) {
     $tipo = $_POST['tipo'];
-    $id = $_POST['id_usu'];
+    $id = $_SESSION["Id"]; // Usar el ID de la sesión
+    $fecha = $_GET['fecha'];
+    
+    // Si existe tipo_comida, usarla para filtrar
+    $tipo_comida = isset($_POST['tipo_comida']) ? $_POST['tipo_comida'] : null;
     
     switch($tipo) {
         case 'comida':
-            $query = "DELETE FROM comida WHERE id_usu = ?";
+            if ($tipo_comida) {
+                $query = "DELETE FROM comida WHERE id_usu = ? AND fecha = ? AND tipo_comida = ?";
+                $stmt = $connection->prepare($query);
+                $stmt->bind_param("iss", $id, $fecha, $tipo_comida);
+            } else {
+                $query = "DELETE FROM comida WHERE id_usu = ? AND fecha = ?";
+                $stmt = $connection->prepare($query);
+                $stmt->bind_param("is", $id, $fecha);
+            }
             break;
         case 'glucosa':
-            $query = "DELETE FROM control_glucosa WHERE id_usu = ?";
+            $query = "DELETE FROM control_glucosa WHERE id_usu = ? AND fecha = ?";
+            $stmt = $connection->prepare($query);
+            $stmt->bind_param("is", $id, $fecha);
             break;
         case 'hiper':
-            $query = "DELETE FROM hiperglucemia WHERE id_usu = ?";
+            if ($tipo_comida) {
+                $query = "DELETE FROM hiperglucemia WHERE id_usu = ? AND fecha = ? AND tipo_comida = ?";
+                $stmt = $connection->prepare($query);
+                $stmt->bind_param("iss", $id, $fecha, $tipo_comida);
+            } else {
+                $query = "DELETE FROM hiperglucemia WHERE id_usu = ? AND fecha = ?";
+                $stmt = $connection->prepare($query);
+                $stmt->bind_param("is", $id, $fecha);
+            }
             break;
         case 'hipo':
-            $query = "DELETE FROM hipoglucemia WHERE id_usu = ?";
+            if ($tipo_comida) {
+                $query = "DELETE FROM hipoglucemia WHERE id_usu = ? AND fecha = ? AND tipo_comida = ?";
+                $stmt = $connection->prepare($query);
+                $stmt->bind_param("iss", $id, $fecha, $tipo_comida);
+            } else {
+                $query = "DELETE FROM hipoglucemia WHERE id_usu = ? AND fecha = ?";
+                $stmt = $connection->prepare($query);
+                $stmt->bind_param("is", $id, $fecha);
+            }
             break;
     }
-    
-    $stmt = $connection->prepare($query);
-    $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
         $mensaje = "Registro eliminado con éxito";
     } else {
-        $error = "Error al eliminar el registro";
+        $error = "Error al eliminar el registro: " . $stmt->error;
     }
 }
 ?>

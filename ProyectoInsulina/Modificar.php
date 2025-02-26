@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Verificar si el usuario ha iniciado sesión
+if (!isset($_SESSION["Id"])) {
+    header("Location: Login.php");
+    exit();
+}
+
 $hn = "localhost";
 $un = "root";
 $pw = "";
@@ -13,24 +20,27 @@ if ($connection->connect_error) {
 
 // Función para obtener registros por fecha y tipo
 function obtenerRegistros($connection, $fecha, $tipo) {
+    // Obtener el ID del usuario de la sesión
+    $id_usuario = $_SESSION["Id"];
+    
     $query = "";
     switch($tipo) {
         case 'comida':
-            $query = "SELECT id_usu, fecha, tipo_comida, gl_1h, gl_2h, raciones, insulina FROM comida WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, tipo_comida, gl_1h, gl_2h, raciones, insulina FROM comida WHERE fecha = ? AND id_usu = ?";
             break;
         case 'glucosa':
-            $query = "SELECT id_usu, fecha, deporte, lenta FROM control_glucosa WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, deporte, lenta FROM control_glucosa WHERE fecha = ? AND id_usu = ?";
             break;
         case 'hiper':
-            $query = "SELECT id_usu, fecha, tipo_comida, glucosa, hora, correccion FROM hiperglucemia WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, tipo_comida, glucosa, hora, correccion FROM hiperglucemia WHERE fecha = ? AND id_usu = ?";
             break;
         case 'hipo':
-            $query = "SELECT id_usu, fecha, tipo_comida, glucosa, hora FROM hipoglucemia WHERE fecha = ?";
+            $query = "SELECT id_usu, fecha, tipo_comida, glucosa, hora FROM hipoglucemia WHERE fecha = ? AND id_usu = ?";
             break;
     }
     
     $stmt = $connection->prepare($query);
-    $stmt->bind_param("s", $fecha);
+    $stmt->bind_param("si", $fecha, $id_usuario);
     $stmt->execute();
     return $stmt->get_result();
 }
@@ -38,7 +48,7 @@ function obtenerRegistros($connection, $fecha, $tipo) {
 // Procesar la actualización si se envía el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
     $tipo = $_POST['tipo'];
-    $id = $_POST['id_usu'];
+    $id = $_SESSION['Id']; // Usar Id de la sesión, no id_usu
     
     switch($tipo) {
         case 'comida':
@@ -57,85 +67,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
             );
             break;
             
-        
-            case 'glucosa':
-                $query = "UPDATE control_glucosa SET fecha=?, deporte=?, lenta=? WHERE id_usu=? AND fecha=?";
-                $stmt = $connection->prepare($query);
-                $stmt->bind_param("siiis", 
-                    $_POST['fecha'], 
-                    $_POST['deporte'], 
-                    $_POST['lenta'],
-                    $id,
-                    $_POST['fecha_original']
-                );
-                break;
-    
-            case 'hiper':
-                $query = "UPDATE hiperglucemia SET glucosa=?, hora=?, correccion=?, tipo_comida=?, fecha=? WHERE id_usu=? AND fecha=? AND tipo_comida=?";
-                $stmt = $connection->prepare($query);
-                $stmt->bind_param("issssiss", 
-                    $_POST['glucosa'], 
-                    $_POST['hora'], 
-                    $_POST['correccion'],
-                    $_POST['tipo_comida'],
-                    $_POST['fecha'],
-                    $id,
-                    $_POST['fecha_original'],
-                    $_POST['tipo_comida_original']
-                );
-                break;
-    
-            case 'hipo':
-                $query = "UPDATE hipoglucemia SET glucosa=?, hora=?, tipo_comida=?, fecha=? WHERE id_usu=? AND fecha=? AND tipo_comida=? ";
-                $stmt = $connection->prepare($query);
-                $stmt->bind_param("isssiss", 
-                    $_POST['glucosa'], 
-                    $_POST['hora'], 
-                    $_POST['tipo_comida'],
-                    $_POST['fecha'],
-                    $id,
-                    $_POST['fecha_original'],
-                    $_POST['tipo_comida_original']
-                );
-                break;
+        case 'glucosa':
+            $query = "UPDATE control_glucosa SET fecha=?, deporte=?, lenta=? WHERE id_usu=? AND fecha=?";
+            $stmt = $connection->prepare($query);
+            $stmt->bind_param("siiis", 
+                $_POST['fecha'], 
+                $_POST['deporte'], 
+                $_POST['lenta'],
+                $id,
+                $_POST['fecha_original']
+            );
+            break;
 
-                case 'hipo':
-    ?>
-    <div class="row">
-        <div class="col-md-2 mb-3">
-            <label class="form-label">Fecha</label>
-            <input type="date" class="form-control" name="fecha" 
-                   value="<?php echo htmlspecialchars($row['fecha']); ?>">
-        </div>
-        <div class="col-md-3 mb-3">
-            <label class="form-label">Tipo de Comida</label>
-            <select class="form-select" name="tipo_comida">
-                <option value="Desayuno" <?php echo $row['tipo_comida'] == 'Desayuno' ? 'selected' : ''; ?>>Desayuno</option>
-                <option value="Comida" <?php echo $row['tipo_comida'] == 'Comida' ? 'selected' : ''; ?>>Comida</option>
-                <option value="Cena" <?php echo $row['tipo_comida'] == 'Cena' ? 'selected' : ''; ?>>Cena</option>
-                <option value="Otro" <?php echo $row['tipo_comida'] == 'Otro' ? 'selected' : ''; ?>>Otro</option>
-            </select>
-        </div>
-        <div class="col-md-2 mb-3">
-            <label class="form-label">Glucosa</label>
-            <input type="number" class="form-control" name="glucosa" 
-                   value="<?php echo htmlspecialchars($row['glucosa']); ?>">
-        </div>
-        <div class="col-md-2 mb-3">
-            <label class="form-label">Hora</label>
-            <input type="time" class="form-control" name="hora" 
-                   value="<?php echo htmlspecialchars($row['hora']); ?>">
-        </div>
-    </div>
-    <?php
-    break;
+        case 'hiper':
+            $query = "UPDATE hiperglucemia SET glucosa=?, hora=?, correccion=?, tipo_comida=?, fecha=? WHERE id_usu=? AND fecha=? AND tipo_comida=?";
+            $stmt = $connection->prepare($query);
+            $stmt->bind_param("issssiss", 
+                $_POST['glucosa'], 
+                $_POST['hora'], 
+                $_POST['correccion'],
+                $_POST['tipo_comida'],
+                $_POST['fecha'],
+                $id,
+                $_POST['fecha_original'],
+                $_POST['tipo_comida_original']
+            );
+            break;
 
+        case 'hipo':
+            $query = "UPDATE hipoglucemia SET glucosa=?, hora=?, tipo_comida=?, fecha=? WHERE id_usu=? AND fecha=? AND tipo_comida=?";
+            $stmt = $connection->prepare($query);
+            $stmt->bind_param("isssiss", 
+                $_POST['glucosa'], 
+                $_POST['hora'], 
+                $_POST['tipo_comida'],
+                $_POST['fecha'],
+                $id,
+                $_POST['fecha_original'],
+                $_POST['tipo_comida_original']
+            );
+            break;
     }
     
     if ($stmt->execute()) {
         $mensaje = "Registro actualizado con éxito";
     } else {
-        $error = "Error al actualizar el registro";
+        $error = "Error al actualizar el registro: " . $stmt->error;
     }
 }
 ?>
@@ -170,13 +147,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary d-block">Buscar</button>
+                    <button type="submit" class="btn btn-primary d-block w-100">Buscar</button>
                 </div>
             </div>
         </form>
 
         <?php
-        if (isset($_POST['fecha']) && isset($_POST['tipo'])) {
+        if (isset($_POST['fecha']) && isset($_POST['tipo']) && !isset($_POST['actualizar'])) {
             $registros = obtenerRegistros($connection, $_POST['fecha'], $_POST['tipo']);
             
             if ($registros->num_rows > 0) {
@@ -187,7 +164,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
                     echo "<input type='hidden' name='tipo' value='" . $_POST['tipo'] . "'>";
                     echo "<input type='hidden' name='id_usu' value='" . $row['id_usu'] . "'>";
                     echo "<input type='hidden' name='fecha_original' value='" . $row['fecha'] . "'>";
-                    echo "<input type='hidden' name='tipo_comida_original' value='" . htmlspecialchars($row['tipo_comida']) . "'>";
+                    echo "<input type='hidden' name='tipo_comida_original' value='" . htmlspecialchars($row['tipo_comida'] ?? '') . "'>";
                     
                     // Mostrar campos según el tipo de registro
                     switch($_POST['tipo']) {

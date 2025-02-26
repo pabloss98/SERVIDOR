@@ -407,7 +407,6 @@ $hba1c_estimada = ($promedio_glucosa + 46.7) / 28.7;
         <!-- Botones de navegación -->
         <div class="d-flex justify-content-between">
             <a href="Formulario.html" class="btn btn-primary">Volver al formulario</a>
-            <a href="historial.php" class="btn btn-secondary">Ver historial completo</a>
         </div>
     </div>
     

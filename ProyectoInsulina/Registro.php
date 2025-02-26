@@ -108,7 +108,9 @@ $connection->close();
                     <button type="submit" class="btn btn-primary">Registrarse</button>
                 </div>
             </div>
+            <a href="Inicio.php" class="btn btn-primary">Volver a inicio</a>
         </form>
     </div>
+    
 </body>
 </html>

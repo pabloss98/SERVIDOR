@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $login = $_POST["login"];
     $password = $_POST["password"];
 
-    var_dump($_POST); // Verifica si los datos llegan bien
+    //var_dump($_POST); // Verifica si los datos llegan bien
 
     // Preparar la consulta para evitar inyección SQL
     $stmt = $connection->prepare("SELECT id_usu, usuario, contra FROM usuario WHERE usuario = ?");
@@ -28,13 +28,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    var_dump($result->num_rows); // Verifica si la consulta devuelve algo
+    //var_dump($result->num_rows); // Verifica si la consulta devuelve algo
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        var_dump($row); // Verifica si la consulta obtiene datos
-        var_dump($password, $row['contra']); // Para ver ambas contraseñas
+        //var_dump($row); // Verifica si la consulta obtiene datos
+        //var_dump($password, $row['contra']); // Para ver ambas contraseñas
 
         // Usar password_verify para comparar la contraseña ingresada con la hasheada
         if (password_verify($password, $row['contra'])) {
@@ -96,6 +96,7 @@ $connection->close();
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                 </div>
             </div>
+            <a href="Inicio.php" class="btn btn-primary">Volver a inicio</a>
         </form>
 
         <!-- Mostrar mensaje de error si las credenciales son incorrectas -->
