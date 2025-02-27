@@ -1,6 +1,6 @@
 <?php
 
-<?php
+
 abstract class Vehiculo {
     private $color;
     private $peso;
@@ -171,6 +171,4 @@ class Dos_ruedas extends Vehiculo {
         $this->setpeso($this->getpeso() + $peso_persona + 2);
     }
 }
-?>
-
 ?>

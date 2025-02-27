@@ -7,7 +7,7 @@
 	<body>
     <?php
 session_start();
-
+//Mostrar en pantalla un formulario donde seleccionar la fecha y persona de la base de datos y un boton para poder mostrar la agenda del dia de esa persona.
 if (isset($_POST['grabar'])) {
     $cadena_conexion = 'mysql:dbname=agenda;host=127.0.0.1';
     $usuario = 'root';
@@ -33,7 +33,7 @@ if (isset($_POST['grabar'])) {
                 $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':telefono', $telefono);
                 $stmt->bindParam(':codusuario', $_SESSION['codusuario']);
-
+//Tengo que crear un formulario donde seleccionar la fecha del sistema, la hora pudiendo seleccionar franjas horarias y un desplegable con las personas que hay en la base de datos en la tabla personas debajo se ha de mostrar otra tabla como la realizada anteriormente pero con un boton de tipo radio para poder seleccionar una de ellas de cada vez. A partir de estos datos introducidos se ha de realizar una insercion en la base de datos en la tabla agenda.
                 try {
                     $stmt->execute();
                     echo "Contacto $i guardado con éxito.<br>";
