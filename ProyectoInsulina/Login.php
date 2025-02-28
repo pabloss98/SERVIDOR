@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-$hn = "localhost"; 
-$un = "root";      
-$pw = "";          
-$db = "diabetesdb"; 
+$hn = "fdb1028.awardspace.net";
+$un = "4597186_diabetesdb";
+$pw = "insulina123";
+$db = "4597186_diabetesdb"; 
 
 $connection = new mysqli($hn, $un, $pw, $db);
 
@@ -96,7 +96,7 @@ $connection->close();
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                 </div>
             </div>
-            <a href="Inicio.php" class="btn btn-primary">Volver a inicio</a>
+            <a href="index.php" class="btn btn-primary">Volver a inicio</a>
         </form>
 
         <!-- Mostrar mensaje de error si las credenciales son incorrectas -->

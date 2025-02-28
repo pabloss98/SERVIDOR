@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-$hn = "localhost"; 
-$un = "root";      
-$pw = "";          
-$db = "diabetesdb"; 
+$hn = "fdb1028.awardspace.net";
+$un = "4597186_diabetesdb";
+$pw = "insulina123";
+$db = "4597186_diabetesdb"; 
 
 $conn = new mysqli($hn, $un, $pw, $db);
 
@@ -48,7 +48,6 @@ switch ($periodo) {
 
 $fecha_fin = date('Y-m-d');
 
-// Consultar datos para estadísticas
 $sql = "SELECT 
             c.fecha, 
             c.deporte, 
@@ -62,12 +61,13 @@ $sql = "SELECT
             hipo.hora AS hipo_hora, 
             hiper.glucosa AS hiper_glucosa, 
             hiper.hora AS hiper_hora
-        FROM CONTROL_GLUCOSA c
-        LEFT JOIN COMIDA cm ON c.fecha = cm.fecha AND c.id_usu = cm.id_usu
-        LEFT JOIN HIPOGLUCEMIA hipo ON cm.fecha = hipo.fecha AND cm.tipo_comida = hipo.tipo_comida AND cm.id_usu = hipo.id_usu
-        LEFT JOIN HIPERGLUCEMIA hiper ON cm.fecha = hiper.fecha AND cm.tipo_comida = hiper.tipo_comida AND cm.id_usu = hiper.id_usu
+        FROM control_glucosa c
+        LEFT JOIN comida cm ON c.fecha = cm.fecha AND c.id_usu = cm.id_usu
+        LEFT JOIN hipoglucemia hipo ON cm.fecha = hipo.fecha AND cm.tipo_comida = hipo.tipo_comida AND cm.id_usu = hipo.id_usu
+        LEFT JOIN hiperglucemia hiper ON cm.fecha = hiper.fecha AND cm.tipo_comida = hiper.tipo_comida AND cm.id_usu = hiper.id_usu
         WHERE c.id_usu = ? AND c.fecha BETWEEN ? AND ?
         ORDER BY c.fecha ASC";
+
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("iss", $id_usuario, $fecha_inicio, $fecha_fin);

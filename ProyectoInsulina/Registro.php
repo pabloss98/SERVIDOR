@@ -1,8 +1,9 @@
 <?php
-$hn = "localhost"; 
-$un = "root";      
-$pw = "";          
-$db = "diabetesdb"; 
+// Evitar salida antes de modificar cabeceras
+$hn = "fdb1028.awardspace.net";
+$un = "4597186_diabetesdb";
+$pw = "insulina123";
+$db = "4597186_diabetesdb";
 
 $connection = new mysqli($hn, $un, $pw, $db);
 
@@ -28,20 +29,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($count > 0) {
         echo "<h1>El usuario ya existe. Por favor elige otro.</h1>";
     } else {
-        //Si el usuario no existe procede a insertar el nuevo usuario
-    $stmt = $connection->prepare("INSERT INTO usuario (usuario, contra, nombre, apellidos, fecha_nacimiento) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $usuario, $password, $nombre, $apellidos, $fecha);
+        // Si el usuario no existe, inserta el nuevo usuario
+        $stmt = $connection->prepare("INSERT INTO usuario (usuario, contra, nombre, apellidos, fecha_nacimiento) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $usuario, $password, $nombre, $apellidos, $fecha);
 
-    if($stmt->execute()){
-        echo "<h1>¡$usuario, se ha registrado con éxito!</h1>";
-        header("Location: Inicio.php");
-        exit();
-    } else {
-        echo "<h1>Error al registrar usuario</h1>";
+        if($stmt->execute()){
+            // Redirigir al usuario después de que se ha registrado correctamente
+            header("Location: index.php");
+            exit(); // Asegúrate de salir después de la redirección para evitar ejecutar el resto del código
+        } else {
+            echo "<h1>Error al registrar usuario</h1>";
+        }
+
+        $stmt->close();
     }
-
-    $stmt->close();
-}
 }
 $connection->close();
 ?>
@@ -108,9 +109,8 @@ $connection->close();
                     <button type="submit" class="btn btn-primary">Registrarse</button>
                 </div>
             </div>
-            <a href="Inicio.php" class="btn btn-primary">Volver a inicio</a>
+            <a href="index.php" class="btn btn-primary">Volver a inicio</a>
         </form>
     </div>
-    
 </body>
 </html>

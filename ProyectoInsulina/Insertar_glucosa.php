@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-$hn = "localhost"; 
-$un = "root";      
-$pw = "";          
-$db = "diabetesdb"; 
+$hn = "fdb1028.awardspace.net";
+$un = "4597186_diabetesdb";
+$pw = "insulina123";
+$db = "4597186_diabetesdb"; 
 
 $connection = new mysqli($hn, $un, $pw, $db);
 

@@ -7,10 +7,10 @@ if (!isset($_SESSION["Id"])) {
     exit();
 }
 
-$hn = "localhost";
-$un = "root";
-$pw = "";
-$db = "diabetesdb";
+$hn = "fdb1028.awardspace.net";
+$un = "4597186_diabetesdb";
+$pw = "insulina123";
+$db = "4597186_diabetesdb";
 
 $connection = new mysqli($hn, $un, $pw, $db);
 
@@ -322,7 +322,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
         <?php endif; ?>
 
         <div class="text-center mt-4">
-            <a href="formulario.html" class="btn btn-primary">Volver al Formulario</a>
+            <a href="Formulario.html" class="btn btn-primary">Volver al Formulario</a>
         </div>
 
     </div>
