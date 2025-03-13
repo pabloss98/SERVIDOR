@@ -3,28 +3,52 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Movie; // Importamos el modelo Movie
+use App\Models\Movie; // Importa el modelo Movie
 
 class CatalogController extends Controller
 {
-    // Mostrar todas las películas
     public function getIndex()
     {
-        $movies = Movie::all(); // Obtener todas las películas de la base de datos
-        return view('catalog.index', compact('movies')); // Pasarlas a la vista
+        // Obtener todas las películas de la base de datos
+        $peliculas = Movie::all();
+        return view("catalog.index", compact('peliculas'));
     }
 
-    // Mostrar detalles de una película específica
     public function getShow($id)
     {
-        $pelicula = Movie::findOrFail($id); // Buscar la película o lanzar un error 404
-        return view('catalog.show', compact('pelicula'));
+       
+        $pelicula = Movie::findOrFail($id);
+        return view("catalog.show", compact('pelicula'));
     }
 
-    // Editar película
-    public function getEdit($id)
+    public function getCreate()
     {
-        $pelicula = Movie::findOrFail($id); // Buscar la película o lanzar un error 404
-        return view('catalog.edit', compact('pelicula'));
+        // Aquí puedes implementar la lógica para mostrar el formulario de creación
+        return view("catalog.create");
     }
+
+	public function getEdit($id)
+	{
+		// Obtener la película para editar
+		$pelicula = Movie::findOrFail($id);
+		return view("catalog.edit", compact('pelicula'));
+	}
+    public function store(Request $request){
+        // Validar los datos del formulario
+        if(!empty($request->title) && !empty($request->year) && !empty($request->director) && !empty($request->poster) && !empty($request->synopsis)){
+            // Crear una nueva película
+            $pelicula = new Movie();
+            $pelicula->title = $request->post('title');
+            $pelicula->year = $request->post('year');
+            $pelicula->director = $request->post('director');
+            $pelicula->poster = $request->post('poster');
+            $pelicula->synopsis = $request->post('synopsis');
+            $pelicula->save();
+            return redirect()->route('catalog.index');
+    }
+	
+}
+
+
+
 }

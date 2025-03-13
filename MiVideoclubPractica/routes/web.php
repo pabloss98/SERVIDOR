@@ -1,32 +1,15 @@
 <?php
 
+use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    //return view('welcome');
-    echo "Pagina Principal";
-});
 
-Route::get('login', function () {
-    echo "Login usuario";
-});
 
-Route::get('logout', function () {
-    echo "Logout usuario";
-});
+Route::get('/catalog', [CatalogController::class, 'getIndex'])->name('catalog.index');
 
-Route::get('catalog', function () {
-    echo "Listado peliculas";
-});
+Route::post('/catalog', [CatalogController::class, 'store'])->name('catalog.store'); // Ruta para almacenar una nueva película
+Route::get('/catalog/show/{id}', [CatalogController::class, 'getShow'])->name('catalog.show');
+Route::get('/catalog/{id}/edit', [CatalogController::class, 'getEdit'])->name('catalog.edit');
+Route::get('/catalog/create', [CatalogController::class, 'getCreate'])->name('catalog.create');
 
-Route::get('catalog/show/{id}', function ($id) {
-    echo "Vista detalle pelicula ".$id;
-});
-
-Route::get('catalog/create', function () {
-    echo "Añadir pelicula";
-});
-
-Route::get('catalog/edit/{id}', function ($id) {
-    echo "Modificar pelicula ".$id;
-});
