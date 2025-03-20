@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Imagen;
 use Illuminate\Http\Request;
+use App\Models\Imagen;
 
-class ImagenController extends Controller
+class imagenController extends Controller
 {
     public function index()
     {
-
         $imagenes = Imagen::all();
-        return view('imagenes.index', compact('imagenes'));
+        return view('catalogo', compact('imagenes'));
     }
 }

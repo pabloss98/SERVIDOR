@@ -10,9 +10,7 @@ class Imagen extends Model
 
     protected $table = 'imagenes';
 
-    protected $fillable = [
-        'categoria',
-        'imagen',
-        'descripcion',
-    ];
+    protected $fillable = ['categoria', 'imagen', 'descripcion'];
+
+    public $timestamps = false;
 }
