@@ -1,3 +1,3 @@
-<ul class="nav nav-tabs bg-secondary">
+<ul class="nav nav-tabs bg-primary">
 {{$slot}}
 </ul>

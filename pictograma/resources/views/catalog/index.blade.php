@@ -18,8 +18,9 @@
         <div class="row">
             @foreach ($imgs as $img)
             <div class="card col-3 text-center">
-                <img class="card-img-top imgs mx-auto" src="{{asset($img->imagen)}}" alt="{{$img->desripcion}}">
+                <img class="card-img-top imgs mx-auto" src="{{asset($img->imagen)}}" alt="{{$img->descripcion}}">
                 <div class="card-body">
+                <h2 class="card-text">{{$img->descripcion}}</h2>
                 <h5 class="card-title">{{$img->imagen}}</h5>
                 </div>
             </div>

@@ -17,11 +17,14 @@ class AgendaController extends Controller
         return view('agenda.add',compact('personas','imagenes'));
     }
     public function postAdd(Request $request){
+
+       // dd($request->all());
+
         $agenda= new Agenda;
         $agenda->fecha=$request->fecha;
         $agenda->hora=$request->hora;
-        $agenda->idpersona=$request->id;
-        $agenda->idimagen=$request->radio;
+        $agenda->idpersona=$request->idpersona;
+        $agenda->idimagen=$request->idimagen;
         $agenda->save();
         return redirect()->route('agenda.add')->with('info','Agenda añadida correctamente');
     }
@@ -30,12 +33,30 @@ class AgendaController extends Controller
         return view('agenda.buscar',compact('personas'));
     }
     public function postMostrar(Request $request){
-        $agenda=Agenda::select('imagenes.imagen', 'agenda.fecha','agenda.hora','personas.nombre','personas.apellidos')
-            ->join('imagenes', 'imagenes.id', '=', 'agenda.idimagen')
-            ->join('personas', 'personas.id', '=', 'agenda.idpersona')
-            ->where('agenda.idpersona',$request->id)
-            ->where('agenda.fecha',$request->fecha)
+        // Verifica si la variable 'id' está siendo enviada correctamente
+        //dd($request->all()); // Esto te mostrará si 'id' tiene un valor, o si es null
+    
+        // Realiza el JOIN utilizando el nombre de las columnas correctas
+        $agenda = Agenda::select(
+                'imagenes.imagen', 
+                'agenda.fecha', 
+                'agenda.hora', 
+                'personas.nombre', 
+                'personas.apellidos'
+            )
+            ->join('imagenes', 'imagenes.idimagen', '=', 'agenda.idimagen')
+            ->join('personas', 'personas.idpersona', '=', 'agenda.idpersona') // Usa 'idpersona' aquí
+            ->where('agenda.idpersona', $request->idpersona)  // Verifica que 'id' esté llegando correctamente
+            ->where('agenda.fecha', $request->fecha)
             ->get();
-        return view('agenda.mostrar',compact('agenda'));
+            
+        // Si hay resultados, los pasa a la vista, si no, muestra un mensaje
+        if($agenda->isEmpty()) {
+            return back()->with('error', 'No hay registros para la fecha seleccionada.');
+        }
+        
+        return view('agenda.mostrar', compact('agenda'));
     }
+    
+    
 }
