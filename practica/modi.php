@@ -1,70 +1,70 @@
 <?php
-
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-$host = 'localhost';
-$db = 'diabetesdb'; // Base de datos correcta
-$user = 'root';
-$pass = '';
+$databaseConfig = [
+    'host' => 'localhost',
+    'dbName' => 'diabetesdb', 
+    'username' => 'root',    
+    'password' => ''
+];
 
-$conn = new mysqli($host, $user, $pass, $db);
+$connection = new mysqli($databaseConfig['host'], $databaseConfig['username'], $databaseConfig['password'], $databaseConfig['dbName']);
 
-// Verificar conexión
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Conexión fallida: " . $conn->connect_error]));
+if ($connection->connect_error) {
+    sendResponse(['error' => 'Conexión fallida: ' . $connection->connect_error]);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "PUT") {
-    // Obtener los datos enviados
-    $data = json_decode(file_get_contents("php://input"), true);
-    
-    $usuario = $data["usuario"] ?? null;
-    $nombre = $data["nombre"] ?? null;
-    $apellido = $data["apellido"] ?? null;
-    $FechaNac = $data["FechaNac"] ?? null;
-    $clave = isset($data["clave"]) && !empty($data["clave"]) ? password_hash($data["clave"], PASSWORD_BCRYPT) : null;
+if ($_SERVER["REQUEST_METHOD"] === "PUT") {
+    $requestData = json_decode(file_get_contents("php://input"), true);
 
-    if (!$usuario || !$nombre || !$apellido || !$FechaNac) {
-        echo json_encode(["error" => "Faltan datos obligatorios"]);
-        exit;
+    $usuario = $requestData["usuario"] ?? null;
+    $nombre = $requestData["nombre"] ?? null;
+    $apellido = $requestData["apellido"] ?? null;
+    $fecha_nacimiento = $requestData["fecha_nacimiento"] ?? null;
+    $clave = !empty($requestData["clave"]) ? password_hash($requestData["clave"], PASSWORD_BCRYPT) : null;
+
+    if (!$usuario || !$nombre || !$apellido || !$fecha_nacimiento) {
+        sendResponse(['error' => 'Faltan datos obligatorios']);
     }
 
-    // Construcción de consulta dinámica
-    $sql = "UPDATE usuario SET nombre = ?, apellido = ?, FechaNac = ?";
-    $params = [$nombre, $apellido, $FechaNac];
-    $types = "sss";
+    $query = "UPDATE usuario SET nombre = ?, apellido = ?, fecha_nacimiento = ?";
+    $params = [$nombre, $apellido, $fecha_nacimiento];
+    $paramTypes = 'sss';
 
     if ($clave) {
-        $sql .= ", clave = ?";
+        $query .= ", clave = ?";
         $params[] = $clave;
-        $types .= "s";
+        $paramTypes .= 's';
     }
 
-    $sql .= " WHERE usuario = ?";
+    $query .= " WHERE usuario = ?";
     $params[] = $usuario;
-    $types .= "s";
+    $paramTypes .= 's';
 
-    // Preparar la consulta
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        echo json_encode(["error" => "Error en la preparación de la consulta: " . $conn->error]);
-        exit;
+    $statement = $connection->prepare($query);
+    if (!$statement) {
+        sendResponse(['error' => 'Error al preparar la consulta: ' . $connection->error]);
     }
 
-    $stmt->bind_param($types, ...$params);
 
-    // Ejecutar y verificar
-    if ($stmt->execute()) {
-        echo json_encode(["success" => true, "message" => "Usuario actualizado correctamente"]);
+    $statement->bind_param($paramTypes, ...$params);
+
+    if ($statement->execute()) {
+        sendResponse(['success' => true, 'message' => 'Usuario actualizado correctamente']);
     } else {
-        echo json_encode(["error" => "Error al actualizar el usuario: " . $stmt->error]);
+        sendResponse(['error' => 'Error al actualizar el usuario: ' . $statement->error]);
     }
 
-    $stmt->close();
-    $conn->close();
+    $statement->close();
+    $connection->close();
+}
+
+function sendResponse($response) {
+    echo json_encode($response);
+    exit;
 }
 
 ?>

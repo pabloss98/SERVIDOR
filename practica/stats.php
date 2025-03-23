@@ -4,34 +4,31 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// Conectar a la base de datos
-$host = 'localhost';
-$db = 'controldiabetes';
-$user = 'root';
-$pass = '';
+$databaseConfig = [
+    'host' => 'localhost',
+    'dbName' => 'controldiabetes',
+    'username' => 'root',
+    'password' => ''
+];
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($databaseConfig['host'], $databaseConfig['username'], $databaseConfig['password'], $databaseConfig['dbName']);
 
 if ($conn->connect_error) {
-    die(json_encode(["error" => "Conexión fallida: " . $conn->connect_error]));
+    sendResponse(['error' => 'Conexión fallida: ' . $conn->connect_error]);
 }
 
-// Obtener el mes y el año desde la consulta
-$month = isset($_GET['month']) ? filter_var($_GET['month'], FILTER_VALIDATE_INT) : date('m');
-$year = isset($_GET['year']) ? filter_var($_GET['year'], FILTER_VALIDATE_INT) : date('Y');
+$month = filter_input(INPUT_GET, 'month', FILTER_VALIDATE_INT) ?: date('m');
+$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_INT) ?: date('Y');
 
 if (!$month || !$year) {
-    echo json_encode(["error" => "Mes o año no válidos"]);
-    exit;
+    sendResponse(['error' => 'Mes o año no válidos']);
 }
 
-// Consultar los datos del valor LENTA
 $sql = "SELECT lenta FROM controlglucosa WHERE MONTH(fecha) = ? AND YEAR(fecha) = ?";
 $stmt = $conn->prepare($sql);
 
 if (!$stmt) {
-    echo json_encode(["error" => "Error en la preparación de la consulta: " . $conn->error]);
-    exit;
+    sendResponse(['error' => 'Error en la preparación de la consulta: ' . $conn->error]);
 }
 
 $stmt->bind_param("ii", $month, $year);
@@ -48,13 +45,33 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 $conn->close();
 
-// Calcular estadísticas
-$response = [
-    'mean' => count($lenta_values) > 0 ? array_sum($lenta_values) / count($lenta_values) : null,
-    'min' => count($lenta_values) > 0 ? min($lenta_values) : null,
-    'max' => count($lenta_values) > 0 ? max($lenta_values) : null,
-    'values' => $lenta_values
-];
+$response = calculateStatistics($lenta_values);
 
-echo json_encode($response);
+sendResponse($response);
+
+function calculateStatistics(array $values) {
+    $count = count($values);
+    
+    if ($count === 0) {
+        return [
+            'mean' => null,
+            'min' => null,
+            'max' => null,
+            'values' => []
+        ];
+    }
+
+    return [
+        'mean' => array_sum($values) / $count,
+        'min' => min($values),
+        'max' => max($values),
+        'values' => $values
+    ];
+}
+
+function sendResponse(array $response) {
+    echo json_encode($response);
+    exit;
+}
+
 ?>

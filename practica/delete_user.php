@@ -1,62 +1,58 @@
 <?php
-// Configuración de la base de datos
 $host = 'localhost';
-$db = 'diabetesdb'; // Nombre correcto de la base de datos
+$db = 'diabetesdb';
 $user = 'root';
-$pass = ''; // Contraseña por defecto en XAMPP
+$pass = ''; 
 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Methods: GET, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-// Crear conexión
 $conn = new mysqli($host, $user, $pass, $db);
 
-// Verificar conexión
 if ($conn->connect_error) {
-    die(json_encode(['success' => false, 'message' => 'Conexión fallida: ' . $conn->connect_error]));
+    echo json_encode(['success' => false, 'message' => 'Conexión fallida: ' . $conn->connect_error]);
+    exit();
 }
 
-// Obtener el ID del usuario a eliminar
 if (isset($_GET['id'])) {
-    $userId = intval($_GET['id']); // Sanitizar el ID
+    $userId = intval($_GET['id']); 
 
-    // Primero, eliminar los registros relacionados en control_glucosa
     $sqlDeleteControl = "DELETE FROM control_glucosa WHERE id_usu = ?";
     $stmtControl = $conn->prepare($sqlDeleteControl);
     
     if ($stmtControl === false) {
-        die(json_encode(['success' => false, 'message' => 'Error en la consulta para eliminar control_glucosa.']));
+        echo json_encode(['success' => false, 'message' => 'Error en la consulta para eliminar los registros en control_glucosa.']);
+        exit();
     }
 
     $stmtControl->bind_param("i", $userId);
-    $stmtControl->execute();
-    $stmtControl->close();
+    if (!$stmtControl->execute()) {
+        echo json_encode(['success' => false, 'message' => 'Error al eliminar los registros de control_glucosa.']);
+        exit();
+    }
+    $stmtControl->close(); 
 
-    // Luego, eliminar el usuario
-    $sql = "DELETE FROM usuario WHERE id_usu = ?";
-    $stmt = $conn->prepare($sql);
-    
-    if ($stmt === false) {
-        die(json_encode(['success' => false, 'message' => 'Error en la consulta para eliminar usuario.']));
+    $sqlDeleteUser = "DELETE FROM usuario WHERE id_usu = ?";
+    $stmtUser = $conn->prepare($sqlDeleteUser);
+
+    if ($stmtUser === false) {
+        echo json_encode(['success' => false, 'message' => 'Error en la consulta para eliminar el usuario.']);
+        exit();
     }
 
-    $stmt->bind_param("i", $userId);
-
-    // Ejecutar la consulta para eliminar el usuario
-    if ($stmt->execute()) {
+    $stmtUser->bind_param("i", $userId);
+    if ($stmtUser->execute()) {
         echo json_encode(['success' => true, 'message' => 'Usuario eliminado con éxito.']);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Error al eliminar el usuario: ' . $stmt->error]);
+        echo json_encode(['success' => false, 'message' => 'Error al eliminar el usuario: ' . $stmtUser->error]);
     }
 
-    // Cerrar la declaración
-    $stmt->close();
+    $stmtUser->close();
 } else {
-    echo json_encode(['success' => false, 'message' => 'ID de usuario no proporcionado.']);
+    echo json_encode(['success' => false, 'message' => 'No se proporcionó un ID de usuario.']);
 }
 
-// Cerrar la conexión
 $conn->close();
 ?>
