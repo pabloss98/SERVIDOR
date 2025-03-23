@@ -22,33 +22,33 @@ if ($_SERVER["REQUEST_METHOD"] === "PUT") {
 
     $usuario = $requestData["usuario"] ?? null;
     $nombre = $requestData["nombre"] ?? null;
-    $apellido = $requestData["apellido"] ?? null;
-    $fecha_nacimiento = $requestData["fecha_nacimiento"] ?? null;
-    $clave = !empty($requestData["clave"]) ? password_hash($requestData["clave"], PASSWORD_BCRYPT) : null;
+    $apellido = $requestData["apellidos"] ?? null;
+    $fecha_nacimiento = $requestData["fechaNacimiento"] ?? null;
+    $contra = !empty($requestData["password"]) ? password_hash($requestData["password"], PASSWORD_BCRYPT) : null;
+
 
     if (!$usuario || !$nombre || !$apellido || !$fecha_nacimiento) {
-        sendResponse(['error' => 'Faltan datos obligatorios']);
+        sendResponse(['error' => 'Faltan datos obligatorios: usuario, nombre, apellidos o fecha de nacimiento']);
     }
 
-    $query = "UPDATE usuario SET nombre = ?, apellido = ?, fecha_nacimiento = ?";
+    $query = "UPDATE usuario SET nombre = ?, apellidos = ?, fecha_nacimiento = ?";
     $params = [$nombre, $apellido, $fecha_nacimiento];
     $paramTypes = 'sss';
 
-    if ($clave) {
-        $query .= ", clave = ?";
-        $params[] = $clave;
+    if ($contra) {
+        $query .= ", contra = ?";
+        $params[] = $contra;
         $paramTypes .= 's';
     }
 
     $query .= " WHERE usuario = ?";
     $params[] = $usuario;
-    $paramTypes .= 's';
+    $paramTypes .= 's'; 
 
     $statement = $connection->prepare($query);
     if (!$statement) {
         sendResponse(['error' => 'Error al preparar la consulta: ' . $connection->error]);
     }
-
 
     $statement->bind_param($paramTypes, ...$params);
 
@@ -66,5 +66,4 @@ function sendResponse($response) {
     echo json_encode($response);
     exit;
 }
-
 ?>
